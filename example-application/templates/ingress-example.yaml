@@ -1,0 +1,46 @@
+{{/*
+
+We do not allow for direct creation of ingresses, but this example demonstrates how routes to services could work.
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}-example-hello-ingress
+  labels:
+    app.plaidcloud.com/app: nginx
+    app.plaidcloud.com/component: example-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: {{ .Values.global.letsEncryptClusterIssuer }}
+    kubernetes.io/tls-acme: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - frontend.{{ .Values.ingress.hostname }}
+    - backend.{{ .Values.ingress.hostname }}
+    secretName: example-cert
+  rules:
+
+  These rules illustrate how different subdomains can resolve to different services.
+
+  - host: frontend.{{ .Values.ingress.hostname }}
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: {{ .Release.Name }}-hello-frontend
+            port:
+              number: 80
+  - host: backend.{{ .Values.ingress.hostname }}
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: {{ .Release.Name }}-hello-backend
+            port:
+              number: 80
+*/}}
